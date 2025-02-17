@@ -6,16 +6,17 @@ import javafx.scene.paint.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
- * containing rabbits and foxes.
+ * containing rabbits, foxes, and grass.
  * 
- * @author David J. Barnes, Michael Kölling and Jeffery Raphael
- * @version 2025.02.10
+ * @author David J. Barnes, Michael Kölling, Jeffery Raphael, Johnny Guest and Jason Immanuel
+ * @version 2025.02.17
  */
 
 public class Simulator {
 
     private static final double FOX_CREATION_PROBABILITY = 0.02;
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;    
+    private static final double RABBIT_CREATION_PROBABILITY = 0.08;
+    private static final double GRASS_CREATION_PROBABILITY = 0.5;
 
     private List<Animal> animals;
     private Field field;
@@ -37,7 +38,7 @@ public class Simulator {
     /**
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each
-     * fox and rabbit.
+     * fox, rabbit, and grass.
      */
     public void simulateOneStep() {
         step++;
@@ -64,7 +65,7 @@ public class Simulator {
     }
     
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Randomly populate the field with foxes, rabbits, and grass.
      */
     private void populate() {
         
@@ -82,6 +83,11 @@ public class Simulator {
                     Location location = new Location(row, col);
                     Rabbit rabbit = new Rabbit(true, field, location, Color.GREY);
                     animals.add(rabbit);
+                }
+                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Grass grass = new Grass(field, location);
+                    animals.add(grass);
                 }
                 // else leave the location empty.
             }
