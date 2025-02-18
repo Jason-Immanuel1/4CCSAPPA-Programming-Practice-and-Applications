@@ -17,13 +17,15 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
     private static final double BREEDING_PROBABILITY = 0.12;
     private static final int MAX_LITTER_SIZE = 4;
     private static final Random rand = Randomizer.getRandom();
+    private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
     private static final double GET_SICK_PROBABILITY = 0.01;
+    private int sicknessStepsRemaining = 0;
     
     private static final int GRASS_FOOD_VALUE = 9;
     
     private int age;
     private int foodLevel;
-    private int sicknessStepsRemaining = 0;
+    private boolean isSick = false;
     
 
     /**
@@ -56,6 +58,7 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
     public void act(List<Animal> newRabbits) {
         getSick();
         applySickness();
+        passOnSickness();
         
         incrementAge();
         incrementHunger();
@@ -132,24 +135,36 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
     }
     
     /**
-     * Every animal will have a 1% chance of getting sick every step. 
-     * Also check if sicknessStepsRemainig is == 0 to avoid stacking sickness on the same animal.
+     * Any animal that is not already sick has a 1% chance of becoming sick.
      */
-    private void getSick() {
-        System.out.println("Checking if animal gets sick...");
+    public void getSick() {
     if (rand.nextDouble() <= GET_SICK_PROBABILITY && sicknessStepsRemaining == 0) {
-        sicknessStepsRemaining = 5;
+        isSick = true;  // Directly setting the boolean
+        sicknessStepsRemaining = 5;  // Directly setting sickness steps
     }
     }
     
     /**
      * If sick, the animal will loose foodLevel twice as fast as normal.
      */
-    private void applySickness() {
+    public void applySickness() {
     if (sicknessStepsRemaining > 0) {
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
     }
     }
+    
+    private void passOnSickness(){
+    if(isSick){
+        List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
+        for(Animal neighbour : neighbours){
+            if(neighbour instanceof Rabbit && !neighbour.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY){
+                neighbour.setSick();
+                neighbour.setSicknessSteps(5);
+            }
+        }
+    }
+    }
+
 }
