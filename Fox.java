@@ -5,23 +5,23 @@ import java.util.LinkedList;
 import javafx.scene.paint.Color; 
 
 /**
- * Write a description of class Hawk here.
- *
- * @author Jonny Guest and Jason Immanuel
- * @version (a version number or a date)
+ * A simple model of a fox.
+ * Foxes age, move, eat rabbits, and die.
+ * 
+ * @author David J. Barnes and Michael Kölling, Jonny Guest and Jason Immanuel
+ * @version 2025.02.10
  */
 
-public class Hawk extends Animal{                //RED SQUARE IN FIELD
-     private static final int BREEDING_AGE = 3;
-    private static final int MAX_AGE = 20;
-    private static final double BREEDING_PROBABILITY = 0.12;
-    private static final int MAX_LITTER_SIZE = 2;
-    
-    private static final int FOX_FOOD_VALUE = 9;
-    private static final int SNAKE_FOOD_VALUE = 9;
+public class Fox extends Animal {          //BROWN SQUARE IN FIELD
+
+    private static final int BREEDING_AGE = 15;
+    private static final int MAX_AGE = 120;
+    private static final double BREEDING_PROBABILITY = 0.10;
     private static final double GET_SICK_PROBABILITY = 0.01;
     private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
-    
+    private static final int MAX_LITTER_SIZE = 4;
+    private static final int RABBIT_FOOD_VALUE = 9;
+    private static final int MOUSE_FOOD_VALUE = 9;
     private static final Random rand = Randomizer.getRandom();
     
     private int age;
@@ -29,27 +29,35 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
     private int sicknessStepsRemaining = 0;
     private boolean isSick = false;
     
-    public Hawk(boolean randomAge, Field field, Location location, Color col){
-         super(field, location, col);
-         
+    /**
+     * Create a fox. A fox can be created as a new born (age zero
+     * and not hungry) or with a random age and food level.
+     * 
+     * @param randomAge If true, the fox will have random age and hunger level.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     */
+    public Fox(boolean randomAge, Field field, Location location, Color col) {
+        super(field, location, col);
+        
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(FOX_FOOD_VALUE);
+            foodLevel = rand.nextInt(RABBIT_FOOD_VALUE);
         }
         else {
             age = 0;
-            foodLevel = SNAKE_FOOD_VALUE;
+            foodLevel = RABBIT_FOOD_VALUE;
         }
     }
     
-      /**
-     * This is what the hawk does most of the time: it hunts for
-     * snake/fox. In the process, it might breed, die of hunger,
+    /**
+     * This is what the fox does most of the time: it hunts for
+     * rabbit/mouse. In the process, it might breed, die of hunger,
      * or die of old age.
      * @param field The field currently occupied.
      * @param newFoxes A list to return newly born foxes.
      */
-    public void act(List<Animal> newHawks) {
+    public void act(List<Animal> newFoxes) {
         if (!isSick()) {
             getSick();  
         }
@@ -61,7 +69,7 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newHawks);           
+            giveBirth(newFoxes);           
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { // No food found - try to move to a free location.
@@ -77,9 +85,9 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
                 }
             }
     }
-    
-     /**
-     * Increase the age. This could result in the hawk's death.
+
+    /**
+     * Increase the age. This could result in the fox's death.
      */
     private void incrementAge() {
         age++;
@@ -88,8 +96,8 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         }
     }
     
-      /**
-     * Make this hawk more hungry. This could result in the hawk's death.
+    /**
+     * Make this fox more hungry. This could result in the fox's death.
      */
     private void incrementHunger() {
         foodLevel--;
@@ -98,27 +106,31 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         }
     }
     
-    private Location findFood(){
+    /**
+     * Look for rabbits adjacent to the current location.
+     * Only the first live rabbit is eaten.
+     * @return Where food was found, or null if it wasn't.
+     */
+    private Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()){
+        while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal instanceof Fox){
-                Fox fox = (Fox) animal;
-                if(fox.isAlive()){
-                    fox.setDead();
-                    foodLevel = FOX_FOOD_VALUE;
+            if(animal instanceof Rabbit) {
+                Rabbit rabbit = (Rabbit) animal;
+                if(rabbit.isAlive()) { 
+                    rabbit.setDead();
+                    foodLevel = RABBIT_FOOD_VALUE;
                     return where;
                 }
             }
-            else if(animal instanceof Snake){
-                Snake snake = (Snake) animal;
-                if(snake.isAlive()){
-                    snake.setDead();
-                    foodLevel = SNAKE_FOOD_VALUE;
+            else if(animal instanceof Mouse){
+                Mouse mouse = (Mouse) animal;
+                if(mouse.isAlive()){
+                    mouse.setDead();
+                    foodLevel = MOUSE_FOOD_VALUE;
                     return where;
                 }
             }
@@ -126,24 +138,24 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         return null;
     }
     
-     /**
-     * Check whether or not this hawk is to give birth at this step.
+    /**
+     * Check whether or not this fox is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newHawks A list to return newly born hawks.
+     * @param newFoxes A list to return newly born foxes.
      */
-    private void giveBirth(List<Animal> newHawks) {
-        // New hawks are born into adjacent locations.
+    private void giveBirth(List<Animal> newFoxes) {
+        // New foxes are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Hawk young = new Hawk(false, field, loc, getColor());
-            newHawks.add(young);
+            Fox young = new Fox(false, field, loc, getColor());
+            newFoxes.add(young);
         }
     }
-    
+        
     /**
      * Generate a number representing the number of births,
      * if it can breed.
@@ -156,9 +168,9 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         }
         return births;
     }
-    
+
     /**
-     * A hawk can breed if it has reached the breeding age.
+     * A fox can breed if it has reached the breeding age.
      */
     private boolean canBreed() {
         return age >= BREEDING_AGE;
@@ -193,7 +205,7 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
             List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
             if(neighbours != null) {  
                 for(Animal neighbour : neighbours) {
-                    if (neighbour != null && neighbour instanceof Hawk && neighbour.isAlive()) { 
+                    if (neighbour != null && neighbour instanceof Fox && neighbour.isAlive()) {  
                         Rabbit rabbit = (Rabbit) neighbour;  
                         if (!rabbit.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY) {
                             rabbit.setSick(); 

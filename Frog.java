@@ -19,12 +19,15 @@ public class Frog extends Animal{          //GREEN SQUARE IN FIELD
     
     private static final int GRASSHOPPER_FOOD_VALUE = 9;
     private static final double GET_SICK_PROBABILITY = 0.01;
+    private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
     
     private static final Random rand = Randomizer.getRandom();
     
     private int age;
     private int foodLevel;
     private int sicknessStepsRemaining = 0;    
+    private boolean isSick = false;
+    
     public Frog(boolean randomAge, Field field, Location location, Color col){
          super(field, location, col);
          
@@ -45,29 +48,33 @@ public class Frog extends Animal{          //GREEN SQUARE IN FIELD
      * @param field The field currently occupied.
      * @param newFoxes A list to return newly born foxes.
      */
-    public void act(List<Animal> newSnakes) {
-        getSick();
-        applySickness();
-        
+    public void act(List<Animal> newFrogs) {
+        if (!isSick()) {
+            getSick();  
+        }
+        if (isSick()) {
+            applySickness();
+            passOnSickness();
+        }
+            
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newSnakes);            
+            giveBirth(newFrogs);           
             // Move towards a source of food if found.
             Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
+            if(newLocation == null) { // No food found - try to move to a free location.
                 newLocation = getField().getFreeAdjacentLocation(getLocation());
-            }
+                }
             // See if it was possible to move.
             if(newLocation != null) {
                 setLocation(newLocation);
+                }
+                else {
+                    // Overcrowding.
+                    setDead();
+                }
             }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
     }
     
      /**
@@ -113,9 +120,9 @@ public class Frog extends Animal{          //GREEN SQUARE IN FIELD
      /**
      * Check whether or not this Frog  is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newFoxes A list to return newly born foxes.
+     * @param newFrogs A list to return newly born frogs.
      */
-    private void giveBirth(List<Animal> newGrasshoppers) {
+    private void giveBirth(List<Animal> newFrogs) {
         // New hawks are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
@@ -124,7 +131,7 @@ public class Frog extends Animal{          //GREEN SQUARE IN FIELD
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             Frog young = new Frog(false, field, loc, getColor());
-            newGrasshoppers.add(young);
+            newFrogs.add(young);
         }
     }
     
@@ -149,23 +156,45 @@ public class Frog extends Animal{          //GREEN SQUARE IN FIELD
     }
     
     /**
-     * Every animal will have a 1% chance of getting sick every step. 
-     * Also check if sicknessStepsRemainig is == 0 to avoid stacking sickness on the same animal.
+     * Any animal that is not already sick has a 1% chance of becoming sick.
      */
-    private void getSick() {
+       public void getSick() {
     if (rand.nextDouble() <= GET_SICK_PROBABILITY && sicknessStepsRemaining == 0) {
-        sicknessStepsRemaining = 5; 
+        sicknessStepsRemaining = 5;
+        isSick = true;
     }
     }
     
     /**
      * If sick, the animal will loose foodLevel twice as fast as normal.
      */
-    private void applySickness() {
+    public void applySickness() {
     if (sicknessStepsRemaining > 0) {
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
+        
     }
+    }
+    
+     /**
+     * If a neighbouring animal is of the same species, and the current animal is sick, it has a 5% chance of passing this on to its neighbouring animal.
+     */
+    private void passOnSickness() {
+        System.out.print("hello");
+        if(isSick) {
+            List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
+            if(neighbours != null) {  
+                for(Animal neighbour : neighbours) {
+                    if (neighbour != null && neighbour instanceof Frog && neighbour.isAlive()) {  
+                        Rabbit rabbit = (Rabbit) neighbour;  
+                        if (!rabbit.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY) {
+                            rabbit.setSick(); 
+                            rabbit.setSicknessSteps(5);  
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

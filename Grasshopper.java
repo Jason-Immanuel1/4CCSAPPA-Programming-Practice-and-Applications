@@ -19,12 +19,14 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
     
     private static final int GRASS_FOOD_VALUE = 9;
     private static final double GET_SICK_PROBABILITY = 0.01;
+    private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
     
     private static final Random rand = Randomizer.getRandom();
     
     private int age;
     private int foodLevel;
     private int sicknessStepsRemaining = 0;
+    private boolean isSick = false;
     
     public Grasshopper(boolean randomAge, Field field, Location location, Color col){
          super(field, location, col);
@@ -47,28 +49,32 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      * @param newFoxes A list to return newly born grasshoppers.
      */
     public void act(List<Animal> newGrasshoppers) {
-        getSick();
-        applySickness();
-        
+        if (!isSick()) {
+            getSick();  
+        }
+        if (isSick()) {
+            applySickness();
+            passOnSickness();
+        }
+            
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newGrasshoppers);            
+            giveBirth(newGrasshoppers);           
             // Move towards a source of food if found.
             Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
+            if(newLocation == null) { // No food found - try to move to a free location.
                 newLocation = getField().getFreeAdjacentLocation(getLocation());
-            }
+                }
             // See if it was possible to move.
             if(newLocation != null) {
                 setLocation(newLocation);
+                }
+                else {
+                    // Overcrowding.
+                    setDead();
+                }
             }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
     }
     
      /**
@@ -114,7 +120,7 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      /**
      * Check whether or not this grasshopper is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newFoxes A list to return newly born grasshopper's.
+     * @param newGrasshoppers A list to return newly born grasshopper's.
      */
     private void giveBirth(List<Animal> newGrasshoppers) {
         // New hawks are born into adjacent locations.
@@ -150,23 +156,44 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
     }
     
     /**
-     * Every animal will have a 1% chance of getting sick every step. 
-     * Also check if sicknessStepsRemainig is == 0 to avoid stacking sickness on the same animal.
+     * Any animal that is not already sick has a 1% chance of becoming sick.
      */
-    private void getSick() {
+       public void getSick() {
     if (rand.nextDouble() <= GET_SICK_PROBABILITY && sicknessStepsRemaining == 0) {
-        sicknessStepsRemaining = 5; 
+        sicknessStepsRemaining = 5;
+        isSick = true;
     }
     }
     
     /**
      * If sick, the animal will loose foodLevel twice as fast as normal.
      */
-    private void applySickness() {
+    public void applySickness() {
     if (sicknessStepsRemaining > 0) {
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
+        
     }
+    }
+    
+    /**
+     * If a neighbouring animal is of the same species, and the current animal is sick, it has a 5% chance of passing this on to its neighbouring animal.
+     */
+    private void passOnSickness() {
+        if(isSick) {
+            List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
+            if(neighbours != null) { 
+                for(Animal neighbour : neighbours) {
+                    if (neighbour != null && neighbour instanceof Grasshopper && neighbour.isAlive()) {  
+                        Rabbit rabbit = (Rabbit) neighbour;  
+                        if (!rabbit.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY) {
+                            rabbit.setSick(); 
+                            rabbit.setSicknessSteps(5);  
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

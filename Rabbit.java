@@ -56,24 +56,27 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
      * @param newRabbits A list to return newly born rabbits.
      */
     public void act(List<Animal> newRabbits) {
-        getSick();
-        applySickness();
-        passOnSickness();
-        
+            if (!isSick()) {
+            getSick();  
+        }
+        if (isSick()) {
+            applySickness();
+            passOnSickness();
+        }
+            
         incrementAge();
         incrementHunger();
         if(isAlive()) {
             giveBirth(newRabbits);            
-            // Try to move into a free location.
             Location newLocation = getField().getFreeAdjacentLocation(getLocation());
             if(newLocation != null) {
                 setLocation(newLocation);
+                }
+                else {
+                    // Overcrowding.
+                    setDead();
+                }
             }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
     }
 
     /**
@@ -155,16 +158,23 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
     }
     }
     
-    private void passOnSickness(){
-    if(isSick){
-        List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
-        for(Animal neighbour : neighbours){
-            if(neighbour instanceof Rabbit && !neighbour.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY){
-                neighbour.setSick();
-                neighbour.setSicknessSteps(5);
+    /**
+     * If a neighbouring animal is of the same species, and the current animal is sick, it has a 5% chance of passing this on to its neighbouring animal.
+     */
+    private void passOnSickness() {
+        if(isSick) {
+            List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
+            if(neighbours != null) { 
+                for(Animal neighbour : neighbours) {
+                    if (neighbour != null && neighbour instanceof Rabbit && neighbour.isAlive()) {  
+                        Rabbit rabbit = (Rabbit) neighbour;  
+                        if (!rabbit.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY) {
+                            rabbit.setSick(); 
+                            rabbit.setSicknessSteps(5);  
+                        }
+                    }
+                }
             }
         }
     }
-    }
-
 }
