@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Random;
 import javafx.scene.paint.Color; 
+import java.util.Iterator;
 
 /**
  * A simple model of a rabbit.
@@ -56,7 +57,7 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
      * @param newRabbits A list to return newly born rabbits.
      */
     public void act(List<Animal> newRabbits) {
-            if (!isSick()) {
+        if (!isSick()) {
             getSick();  
         }
         if (isSick()) {
@@ -67,8 +68,13 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newRabbits);            
-            Location newLocation = getField().getFreeAdjacentLocation(getLocation());
+            giveBirth(newRabbits);           
+            // Move towards a source of food if found.
+            Location newLocation = findFood();
+            if(newLocation == null) { // No food found - try to move to a free location.
+                newLocation = getField().getFreeAdjacentLocation(getLocation());
+                }
+            // See if it was possible to move.
             if(newLocation != null) {
                 setLocation(newLocation);
                 }
@@ -78,7 +84,29 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
                 }
             }
     }
-
+    /**
+     * Rabbit finds food. eats grass
+     */
+    private Location findFood(){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        
+        while(it.hasNext()){
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Grass){
+                Grass grass = (Grass) animal;
+                if(grass.isAlive()){
+                    grass.setDead();
+                    foodLevel = GRASS_FOOD_VALUE;
+                    return where;
+                }
+            }
+        }
+        return null;
+    }
+    
     /**
      * Increase the age.
      * This could result in the rabbit's death.
@@ -155,6 +183,9 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
+    }
+    if (sicknessStepsRemaining == 0) {
+        isSick = false;  
     }
     }
     
