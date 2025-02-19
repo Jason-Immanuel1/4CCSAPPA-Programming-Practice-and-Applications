@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=FieldCanvas
+comment0.text=\n\ Provide\ a\ graphical\ view\ of\ the\ field.\ This\ is\ a\ custom\ node\ for\ the\ user\ interface.\ \n\n\ @author\ Jeffery\ Raphael\n\ @version\ 2024.02.03\n
+comment1.params=height\ width
+comment1.target=FieldCanvas(int,\ int)
+comment1.text=\n\ Create\ a\ new\ FieldView\ component.\n
+comment2.params=gridHeight\ gridWidth
+comment2.target=void\ setScale(int,\ int)
+comment2.text=\n\ The\ scale\ determines\ the\ actual\ size\ of\ the\ rectangles\ that\ are\ drawn\n
+comment3.params=x\ y\ color
+comment3.target=void\ drawMark(int,\ int,\ javafx.scene.paint.Color)
+comment3.text=\n\ Paint\ a\ rectangle\ of\ the\ given\ color\ on\ the\ canvas\n
+numComments=4

@@ -15,6 +15,7 @@ public class Field {
     private static final Random rand = Randomizer.getRandom();
     private int depth, width;
     private Animal[][] field;
+    private FieldStats stats;
 
     /**
      * Represent a field of the given dimensions.
@@ -25,6 +26,7 @@ public class Field {
         this.depth = depth;
         this.width = width;
         field = new Animal[depth][width];
+        stats = new FieldStats();
     }
 
     /**
@@ -140,21 +142,21 @@ public class Field {
      * @return A list of living neighbours
      */
     public List<Animal> getLivingNeighbours(Location location) {
+    assert location != null : "Null location passed to adjacentLocations";
+    List<Animal> neighbours = new LinkedList<>();
 
-      assert location != null : "Null location passed to adjacentLocations";
-      List<Animal> neighbours = new LinkedList<>();
-
-      if (location != null) {
+    if (location != null) {
         List<Location> adjLocations = adjacentLocations(location);
 
         for (Location loc : adjLocations) {
-          Animal animal = field[loc.getRow()][loc.getCol()];
-          if (animal.isAlive())
-            neighbours.add(animal);
+            Animal animal = field[loc.getRow()][loc.getCol()];
+            if (animal != null && animal.isAlive()) {  // Changed order of checks
+                neighbours.add(animal);
+            }
         }
         Collections.shuffle(neighbours, rand);
-      }
-      return neighbours;
+    }
+    return neighbours;
     }
 
     /**
@@ -207,4 +209,10 @@ public class Field {
             return null;
         }
     }
+    
+    public FieldStats getStats() {
+    return stats;
+    }
+    
+    
 }

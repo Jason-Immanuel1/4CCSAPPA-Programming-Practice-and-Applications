@@ -1,5 +1,3 @@
- 
-
 import java.util.List;
 import javafx.scene.paint.Color;
 
@@ -10,7 +8,7 @@ public class Grass extends Animal {
     private int age;
 
     public Grass(Field field, Location location) {
-        super(field, location, Color.GREEN);
+        super(field, location, Color.LIME);
         age = 0;
     }
 
@@ -42,7 +40,3 @@ public class Grass extends Animal {
 }
 
  
- 
-
-
-

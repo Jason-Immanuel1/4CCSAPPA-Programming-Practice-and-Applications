@@ -15,8 +15,13 @@ import javafx.scene.paint.Color;
 public class Simulator {
 
     private static final double FOX_CREATION_PROBABILITY = 0.02;
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;
-    private static final double GRASS_CREATION_PROBABILITY = 0.5;
+    private static final double RABBIT_CREATION_PROBABILITY = 0.06;
+    private static final double HAWK_CREATION_PROBABILITY = 0.01;
+    private static final double SNAKE_CREATION_PROBABILITY = 0.02;
+    private static final double FROG_CREATION_PROBABILITY = 0.03;
+    private static final double MOUSE_CREATION_PROBABILITY = 0.03;
+    private static final double GRASSHOPPER_CREATION_PROBABILITY = 0.06;
+    private static final double GRASS_CREATION_PROBABILITY = 1;
 
     private List<Animal> animals;
     private Field field;
@@ -53,6 +58,7 @@ public class Simulator {
         }
                
         animals.addAll(newAnimals);
+        field.getStats().generateCounts(field);
     }
         
     /**
@@ -84,11 +90,32 @@ public class Simulator {
                     Rabbit rabbit = new Rabbit(true, field, location, Color.GREY);
                     animals.add(rabbit);
                 }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= HAWK_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Grass grass = new Grass(field, location);
-                    animals.add(grass);
+                    Hawk hawk = new Hawk(true, field, location, Color.RED);
+                    animals.add(hawk);
                 }
+                else if(rand.nextDouble() <= SNAKE_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Snake snake = new Snake(true, field, location, Color.PURPLE);
+                    animals.add(snake);
+                }
+                else if(rand.nextDouble() <= FROG_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Frog frog = new Frog(true, field, location, Color.GREEN);
+                    animals.add(frog);
+                }
+                else if(rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Mouse mouse = new Mouse(true, field, location, Color.ORANGE);
+                    animals.add(mouse);
+                }
+                else if(rand.nextDouble() <= GRASSHOPPER_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Grasshopper grasshopper = new Grasshopper(true, field, location, Color.DARKBLUE);
+                    animals.add(grasshopper);
+                }
+                
                 // else leave the location empty.
             }
         }

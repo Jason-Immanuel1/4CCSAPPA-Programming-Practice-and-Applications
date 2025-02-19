@@ -101,7 +101,7 @@ public class FieldStats {
      * These are not kept up to date.
      * @param field The field to generate the stats for.
      */
-    private void generateCounts(Field field) {
+    public void generateCounts(Field field) {
         reset();
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {

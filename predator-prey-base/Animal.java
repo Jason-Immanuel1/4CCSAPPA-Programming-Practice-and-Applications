@@ -1,10 +1,11 @@
 import java.util.List;
 import javafx.scene.paint.Color; 
+import java.util.Random;
 
 /**
  * A class representing shared characteristics of animals.
  * 
- * @author David J. Barnes, Michael Kölling and Jeffery Raphael
+ * @author David J. Barnes, Michael Kölling and Jeffery Raphael, Jonny Guest and Jason Immanuel
  * @version 2025.02.10
  */
 
@@ -13,7 +14,15 @@ public abstract class Animal {
     private boolean alive;
     private Field field;
     private Location location;
+    private String name;
+    private Counter counter;
     private Color color = Color.BLACK;
+    private static final Random rand = Randomizer.getRandom();
+    
+    protected int sicknessStepsRemaining; 
+    private boolean isSick;
+    private static final double GET_SICK_PROBABILITY = 1;
+    private int foodLevel;
     
     /**
      * Create a new animal at location in field.
@@ -27,6 +36,10 @@ public abstract class Animal {
         this.field = field;
         setLocation(location);
         setColor(col);
+        this.name = name; 
+        this.counter = new Counter(name); 
+        this.isSick = false;
+        this.sicknessStepsRemaining = 0;
     }
     
     /**
@@ -43,7 +56,7 @@ public abstract class Animal {
     protected boolean isAlive() {
         return alive;
     }
-
+    
     /**
      * Indicate that the animal is no longer alive.
      * It is removed from the field.
@@ -56,7 +69,7 @@ public abstract class Animal {
             field = null;
         }
     }
-
+    
     /**
      * Return the animal's location.
      * @return The animal's location.
@@ -75,7 +88,7 @@ public abstract class Animal {
         }
         location = newLocation;
         field.place(this, newLocation);
-    }
+        }
     
     /**
      * Return the animal's field.
@@ -98,4 +111,20 @@ public abstract class Animal {
     public Color getColor() {
         return color;
     }   
+    
+    public int getCount() {
+        return counter.getCount();
+    }
+    
+    public boolean isSick() {
+        return isSick;
+    }
+    
+    public void setSick() {
+    this.isSick = true;
+    }
+
+    protected void setSicknessSteps(int steps) {
+    this.sicknessStepsRemaining = steps;
+    }
 }

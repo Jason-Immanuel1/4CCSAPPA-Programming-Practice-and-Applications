@@ -5,23 +5,23 @@ import java.util.LinkedList;
 import javafx.scene.paint.Color; 
 
 /**
- * A simple model of a fox.
- * Foxes age, move, eat rabbits, and die.
- * 
- * @author David J. Barnes and Michael Kölling, Jonny Guest and Jason Immanuel
- * @version 2025.02.10
+ * Write a description of class Snake here.
+ *
+ * @author Jonny Guest and Jason Immanuel
+ * @version (a version number or a date)
  */
 
-public class Fox extends Animal {          //BROWN SQUARE IN FIELD
-
-    private static final int BREEDING_AGE = 15;
-    private static final int MAX_AGE = 120;
-    private static final double BREEDING_PROBABILITY = 0.10;
+public class Snake extends Animal{            //PURPLE SQUARE IN FIELD
+     private static final int BREEDING_AGE = 4;
+    private static final int MAX_AGE = 20;
+    private static final double BREEDING_PROBABILITY = 0.15;
+    private static final int MAX_LITTER_SIZE = 3;
+    
+    private static final int MOUSE_FOOD_VALUE = 9;
+    private static final int FROG_FOOD_VALUE = 9;
     private static final double GET_SICK_PROBABILITY = 0.01;
     private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
-    private static final int MAX_LITTER_SIZE = 4;
-    private static final int RABBIT_FOOD_VALUE = 9;
-    private static final int MOUSE_FOOD_VALUE = 9;
+    
     private static final Random rand = Randomizer.getRandom();
     
     private int age;
@@ -29,35 +29,27 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
     private int sicknessStepsRemaining = 0;
     private boolean isSick = false;
     
-    /**
-     * Create a fox. A fox can be created as a new born (age zero
-     * and not hungry) or with a random age and food level.
-     * 
-     * @param randomAge If true, the fox will have random age and hunger level.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
-    public Fox(boolean randomAge, Field field, Location location, Color col) {
-        super(field, location, col);
-        
+    public Snake(boolean randomAge, Field field, Location location, Color col){
+         super(field, location, col);
+         
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(RABBIT_FOOD_VALUE);
+            foodLevel = rand.nextInt(FROG_FOOD_VALUE);
         }
         else {
             age = 0;
-            foodLevel = RABBIT_FOOD_VALUE;
+            foodLevel = MOUSE_FOOD_VALUE;
         }
     }
     
-    /**
-     * This is what the fox does most of the time: it hunts for
-     * rabbit/mouse. In the process, it might breed, die of hunger,
+      /**
+     * This is what the Snake does most of the time: it hunts for
+     * Frog/mouse. In the process, it might breed, die of hunger,
      * or die of old age.
      * @param field The field currently occupied.
      * @param newFoxes A list to return newly born foxes.
      */
-    public void act(List<Animal> newFoxes) {
+    public void act(List<Animal> newSnakes) {
         if (!isSick()) {
             getSick();  
         }
@@ -69,7 +61,7 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newFoxes);           
+            giveBirth(newSnakes);           
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { // No food found - try to move to a free location.
@@ -85,9 +77,9 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
                 }
             }
     }
-
-    /**
-     * Increase the age. This could result in the fox's death.
+    
+     /**
+     * Increase the age. This could result in the Snake's death.
      */
     private void incrementAge() {
         age++;
@@ -96,8 +88,8 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         }
     }
     
-    /**
-     * Make this fox more hungry. This could result in the fox's death.
+      /**
+     * Make this Snake more hungry. This could result in the hawk's death.
      */
     private void incrementHunger() {
         foodLevel--;
@@ -106,23 +98,19 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         }
     }
     
-    /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood() {
+    private Location findFood(){
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
+        
+        while(it.hasNext()){
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal instanceof Rabbit) {
-                Rabbit rabbit = (Rabbit) animal;
-                if(rabbit.isAlive()) { 
-                    rabbit.setDead();
-                    foodLevel = RABBIT_FOOD_VALUE;
+            if(animal instanceof Frog){
+                Frog frog = (Frog) animal;
+                if(frog.isAlive()){
+                    frog.setDead();
+                    foodLevel = FROG_FOOD_VALUE;
                     return where;
                 }
             }
@@ -138,24 +126,24 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         return null;
     }
     
-    /**
-     * Check whether or not this fox is to give birth at this step.
+     /**
+     * Check whether or not this Snake is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newFoxes A list to return newly born foxes.
+     * @param newSnakes A list to return newly born snakes.
      */
-    private void giveBirth(List<Animal> newFoxes) {
-        // New foxes are born into adjacent locations.
+    private void giveBirth(List<Animal> newSnakes) {
+        // New hawks are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Fox young = new Fox(false, field, loc, getColor());
-            newFoxes.add(young);
+            Snake young = new Snake(false, field, loc, getColor());
+            newSnakes.add(young);
         }
     }
-        
+    
     /**
      * Generate a number representing the number of births,
      * if it can breed.
@@ -168,9 +156,9 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         }
         return births;
     }
-
+    
     /**
-     * A fox can breed if it has reached the breeding age.
+     * A Snake can breed if it has reached the breeding age.
      */
     private boolean canBreed() {
         return age >= BREEDING_AGE;
@@ -205,11 +193,11 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
             List<Animal> neighbours = getField().getLivingNeighbours(getLocation());
             if(neighbours != null) {  
                 for(Animal neighbour : neighbours) {
-                    if (neighbour != null && neighbour instanceof Fox && neighbour.isAlive()) {  
-                        Fox fox = (Fox) neighbour;  
-                        if (!fox.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY) {
-                            fox.setSick(); 
-                            fox.setSicknessSteps(5);  
+                    if (neighbour != null && neighbour instanceof Snake && neighbour.isAlive()) {  
+                        Snake snake = (Snake) neighbour;  
+                        if (!snake.isSick() && rand.nextDouble() <= PASS_ON_SICKNESS_PROBABILLITY) {
+                            snake.setSick(); 
+                            snake.setSicknessSteps(5);  
                         }
                     }
                 }
@@ -217,3 +205,4 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         }
     }
 }
+

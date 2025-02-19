@@ -12,7 +12,7 @@ import javafx.stage.Stage;
  * A graphical view of the simulation grid. The view displays a rectangle for
  * each location.
  *
- * @author David J. Barnes, Michael Kölling & Jeffery Raphael
+ * @author David J. Barnes, Michael Kölling & Jeffery Raphael, Jonny Guest and Jason Immanuel
  * @version 2024.02.03
  */
 
@@ -107,7 +107,7 @@ public class SimulatorView extends Application {
         }
         
         stats.countFinished();
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field).replaceAll("(\\d+)(\\s*)([A-Za-z]+)", "$1   $3"));
     }
 
     /**
