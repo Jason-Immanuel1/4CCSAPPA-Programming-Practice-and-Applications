@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Random;
 import javafx.scene.paint.Color; 
+import java.util.Iterator;
 
 /**
  * A simple model of a rabbit.
@@ -10,17 +11,19 @@ import javafx.scene.paint.Color;
  * @version 2025.02.10
  */
 
-public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
+public class Rabbit extends Animal {    //GREY SQUARE IN FIELD
+    private String genes; 
 
-    private static final int BREEDING_AGE = 5;
-    private static final int MAX_AGE = 40;
-    private static final double BREEDING_PROBABILITY = 0.12;
-    private static final int MAX_LITTER_SIZE = 4;
+    private int breedingAge;  
+    private int maxAge;      
+    private double breedingProbability;  
+    private int maxLitterSize;  
+    private double getSickProbability;  
+    private double metabolism;  
+    
     private static final Random rand = Randomizer.getRandom();
     private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
-    private static final double GET_SICK_PROBABILITY = 0.01;
     private int sicknessStepsRemaining = 0;
-    
     private static final int GRASS_FOOD_VALUE = 9;
     
     private int age;
@@ -39,9 +42,17 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
     public Rabbit(boolean randomAge, Field field, Location location, Color col) {
         super(field, location, col);
         age = 0;
+        genes = Randomizer.generateGene();
+        
+        breedingAge = Integer.parseInt(genes.substring(0, 2));
+        maxAge = Integer.parseInt(genes.substring(2, 5));
+        breedingProbability = Integer.parseInt(genes.substring(5, 7)) / 100.0;
+        maxLitterSize = Integer.parseInt(genes.substring(7, 9));
+        getSickProbability = Integer.parseInt(genes.substring(9, 11)) / 100.0;
+        metabolism = Integer.parseInt(genes.substring(11, 14)) / 100.0;
         
         if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
+            age = rand.nextInt(maxAge);
             foodLevel = rand.nextInt(GRASS_FOOD_VALUE);
         }
         else{
@@ -56,7 +67,7 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
      * @param newRabbits A list to return newly born rabbits.
      */
     public void act(List<Animal> newRabbits) {
-            if (!isSick()) {
+        if (!isSick()) {
             getSick();  
         }
         if (isSick()) {
@@ -67,8 +78,13 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newRabbits);            
-            Location newLocation = getField().getFreeAdjacentLocation(getLocation());
+            giveBirth(newRabbits);           
+            // Move towards a source of food if found.
+            Location newLocation = findFood();
+            if(newLocation == null) { // No food found - try to move to a free location.
+                newLocation = getField().getFreeAdjacentLocation(getLocation());
+                }
+            // See if it was possible to move.
             if(newLocation != null) {
                 setLocation(newLocation);
                 }
@@ -78,21 +94,44 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
                 }
             }
     }
-
+    
+    /**
+     * Rabbit finds food. eats grass
+     */
+    private Location findFood(){
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        
+        while(it.hasNext()){
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal instanceof Grass){
+                Grass grass = (Grass) animal;
+                if(grass.isAlive()){
+                    grass.setDead();
+                    foodLevel = GRASS_FOOD_VALUE;
+                    return where;
+                }
+            }
+        }
+        return null;
+    }
+    
     /**
      * Increase the age.
      * This could result in the rabbit's death.
      */
     private void incrementAge() {
         age++;
-        if(age > MAX_AGE) {
+        if(age > maxAge) {
             setDead();
         }
     }
     
     
     private void incrementHunger() {
-        foodLevel--;
+        foodLevel -= metabolism;
         if(foodLevel <= 0) {
             setDead();
         }
@@ -123,8 +162,8 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
      */
     private int breed() {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+        if(canBreed() && rand.nextDouble() <= breedingProbability) {
+            births = rand.nextInt(maxLitterSize) + 1;
         }
         return births;
     }
@@ -134,16 +173,16 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
      * @return true if the rabbit can breed, false otherwise.
      */
     private boolean canBreed() {
-        return age >= BREEDING_AGE;
+        return age >= breedingAge;
     }
     
     /**
      * Any animal that is not already sick has a 1% chance of becoming sick.
      */
     public void getSick() {
-    if (rand.nextDouble() <= GET_SICK_PROBABILITY && sicknessStepsRemaining == 0) {
-        isSick = true;  // Directly setting the boolean
-        sicknessStepsRemaining = 5;  // Directly setting sickness steps
+    if (rand.nextDouble() <= getSickProbability && sicknessStepsRemaining == 0) {
+        isSick = true;  
+        sicknessStepsRemaining = 5;  
     }
     }
     
@@ -155,6 +194,9 @@ public class Rabbit extends Animal {          //GREY SQUARE IN FIELD
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
+    }
+    if (sicknessStepsRemaining == 0) {
+        isSick = false;  
     }
     }
     

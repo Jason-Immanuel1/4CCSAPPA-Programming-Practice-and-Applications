@@ -12,7 +12,9 @@ import javafx.scene.paint.Color;
  */
 
 public class Hawk extends Animal{                //RED SQUARE IN FIELD
-     private static final int BREEDING_AGE = 3;
+    
+    
+    private static final int BREEDING_AGE = 3;
     private static final int MAX_AGE = 20;
     private static final double BREEDING_PROBABILITY = 0.12;
     private static final int MAX_LITTER_SIZE = 2;
@@ -65,7 +67,7 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { // No food found - try to move to a free location.
-                newLocation = getField().getFreeAdjacentLocation(getLocation());
+                newLocation = getField().getPredatorFreeAdjacentLocation(getLocation());
                 }
             // See if it was possible to move.
             if(newLocation != null) {
@@ -135,7 +137,7 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         // New hawks are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = field.getPredatorFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
@@ -182,6 +184,9 @@ public class Hawk extends Animal{                //RED SQUARE IN FIELD
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
+    }
+    if (sicknessStepsRemaining == 0) {
+        isSick = false;  
     }
     }
     

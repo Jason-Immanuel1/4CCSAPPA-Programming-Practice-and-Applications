@@ -12,21 +12,23 @@ import javafx.scene.paint.Color;
  */
  
 public class Mouse extends Animal{           //ORANGE SQUARE IN FIELD
-     private static final int BREEDING_AGE = 4;
-    private static final int MAX_AGE = 20;
-    private static final double BREEDING_PROBABILITY = 0.12;
-    private static final int MAX_LITTER_SIZE = 3;
+   
     
-    private static final int GRASSHOPPER_FOOD_VALUE = 9;
-    private static final double GET_SICK_PROBABILITY = 0.01;
-    private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
+   private static final int BREEDING_AGE = 4;
+   private static final int MAX_AGE = 20;
+   private static final double BREEDING_PROBABILITY = 0.12;
+   private static final int MAX_LITTER_SIZE = 3;
     
-    private static final Random rand = Randomizer.getRandom();
+   private static final int GRASSHOPPER_FOOD_VALUE = 9;
+   private static final double GET_SICK_PROBABILITY = 0.01;
+   private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
     
-    private int age;
-    private int foodLevel;
-    private int sicknessStepsRemaining = 0;
-    private boolean isSick = false;
+   private static final Random rand = Randomizer.getRandom();
+    
+   private int age;
+   private int foodLevel;
+   private int sicknessStepsRemaining = 0;
+   private boolean isSick = false;
     
     public Mouse(boolean randomAge, Field field, Location location, Color col){
          super(field, location, col);
@@ -64,7 +66,7 @@ public class Mouse extends Animal{           //ORANGE SQUARE IN FIELD
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { // No food found - try to move to a free location.
-                newLocation = getField().getFreeAdjacentLocation(getLocation());
+                newLocation = getField().getPredatorFreeAdjacentLocation(getLocation());
                 }
             // See if it was possible to move.
             if(newLocation != null) {
@@ -126,7 +128,7 @@ public class Mouse extends Animal{           //ORANGE SQUARE IN FIELD
         // New hawks are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = field.getPredatorFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
@@ -173,6 +175,9 @@ public class Mouse extends Animal{           //ORANGE SQUARE IN FIELD
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
+    }
+    if (sicknessStepsRemaining == 0) {
+        isSick = false;  
     }
     }
     

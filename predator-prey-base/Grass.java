@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 public class Grass extends Animal {
 
     private static final int MAX_AGE = 100;
-    private static final double GROWTH_PROBABILITY = 0.3;
+    private static final double GROWTH_PROBABILITY = 0.07;
     private int age;
 
     public Grass(Field field, Location location) {

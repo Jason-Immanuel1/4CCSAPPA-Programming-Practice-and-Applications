@@ -184,11 +184,38 @@ public class Field {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(getObjectAt(next) == null ) {
                 free.add(next);
             }
         }
         return free;
+    }
+    
+    /**
+     * Method to return the free locations for a predator specifically, allow themn to consider grass 'free'.
+     */
+    public List<Location> getPredatorFreeAdjacentLocations(Location location){
+        List<Location> free2 = new LinkedList<>();
+        List<Location> adjacent2 = adjacentLocations(location);
+        for(Location next : adjacent2) {
+            if(getObjectAt(next) == null || getObjectAt(next) instanceof Grass ) {
+                free2.add(next);
+            }
+        }
+        return free2;
+    }
+    
+    /**
+     * gets the list of available rooms for the predator, converts it to a single location
+     */
+    public Location getPredatorFreeAdjacentLocation(Location location) {
+    List<Location> free = getPredatorFreeAdjacentLocations(location);
+    if(free.size() > 0) {
+        return free.get(0);
+    }
+    else {
+        return null;
+    }
     }
     
     /**

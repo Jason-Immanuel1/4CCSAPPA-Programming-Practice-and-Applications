@@ -12,7 +12,9 @@ import javafx.scene.paint.Color;
  */
 
 public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
-     private static final int BREEDING_AGE = 4;
+    
+    
+    private static final int BREEDING_AGE = 4;
     private static final int MAX_AGE = 20;
     private static final double BREEDING_PROBABILITY = 0.20;
     private static final int MAX_LITTER_SIZE = 4;
@@ -173,6 +175,9 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
+    }
+    if (sicknessStepsRemaining == 0) {
+        isSick = false;  
     }
     }
     

@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
  */
 
 public class Fox extends Animal {          //BROWN SQUARE IN FIELD
+   
 
     private static final int BREEDING_AGE = 15;
     private static final int MAX_AGE = 120;
@@ -73,7 +74,7 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
             // Move towards a source of food if found.
             Location newLocation = findFood();
             if(newLocation == null) { // No food found - try to move to a free location.
-                newLocation = getField().getFreeAdjacentLocation(getLocation());
+                newLocation = getField().getPredatorFreeAdjacentLocation(getLocation());
                 }
             // See if it was possible to move.
             if(newLocation != null) {
@@ -147,7 +148,7 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         // New foxes are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = field.getPredatorFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
@@ -194,6 +195,9 @@ public class Fox extends Animal {          //BROWN SQUARE IN FIELD
         foodLevel -= 2; 
         sicknessStepsRemaining--; 
         
+    }
+    if (sicknessStepsRemaining == 0) {
+        isSick = false;  
     }
     }
     

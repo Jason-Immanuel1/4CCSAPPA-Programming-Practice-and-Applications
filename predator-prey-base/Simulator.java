@@ -74,7 +74,6 @@ public class Simulator {
      * Randomly populate the field with foxes, rabbits, and grass.
      */
     private void populate() {
-        
         Random rand = Randomizer.getRandom();
         field.clear();
         
@@ -115,7 +114,11 @@ public class Simulator {
                     Grasshopper grasshopper = new Grasshopper(true, field, location, Color.DARKBLUE);
                     animals.add(grasshopper);
                 }
-                
+                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
+                    Location location = new Location(row, col);
+                    Grass grass = new Grass(field, location);
+                    animals.add(grass);
+                }
                 // else leave the location empty.
             }
         }
