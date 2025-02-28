@@ -1,8 +1,8 @@
 #BlueJ class context
 comment0.target=Animal
 comment0.text=\n\ A\ class\ representing\ shared\ characteristics\ of\ animals.\n\ \n\ @author\ David\ J.\ Barnes,\ Michael\ K\u00F6lling\ and\ Jeffery\ Raphael,\ Jonny\ Guest\ and\ Jason\ Immanuel\n\ @version\ 2025.02.10\n
-comment1.params=field\ location\ col
-comment1.target=Animal(Field,\ Location,\ javafx.scene.paint.Color)
+comment1.params=field\ location\ col\ isMale
+comment1.target=Animal(Field,\ Location,\ javafx.scene.paint.Color,\ boolean)
 comment1.text=\n\ Create\ a\ new\ animal\ at\ location\ in\ field.\n\ \n\ @param\ field\ The\ field\ currently\ occupied.\n\ @param\ location\ The\ location\ within\ the\ field.\n
 comment10.params=
 comment10.target=int\ getCount()
@@ -12,6 +12,8 @@ comment12.params=
 comment12.target=void\ setSick()
 comment13.params=steps
 comment13.target=void\ setSicknessSteps(int)
+comment14.params=
+comment14.target=boolean\ isMale()
 comment2.params=newAnimals
 comment2.target=void\ act(java.util.List)
 comment2.text=\n\ Make\ this\ animal\ act\ -\ that\ is\:\ make\ it\ do\n\ whatever\ it\ wants/needs\ to\ do.\n\ @param\ newAnimals\ A\ list\ to\ receive\ newly\ born\ animals.\n
@@ -36,4 +38,4 @@ comment8.text=\n\ Changes\ the\ color\ of\ the\ animal\n
 comment9.params=
 comment9.target=javafx.scene.paint.Color\ getColor()
 comment9.text=\n\ Returns\ the\ animal's\ color\n
-numComments=14
+numComments=15

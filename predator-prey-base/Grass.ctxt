@@ -1,5 +1,6 @@
 #BlueJ class context
 comment0.target=Grass
+comment0.text=\n\ producer\ to\ be\ eaten\ by\ Rabbit/Grasshopper.\ fixed\ %\ chance\ of\ growing\ back\ where\ dead\ animals\ are\n
 comment1.params=field\ location
 comment1.target=Grass(Field,\ Location)
 comment2.params=newAnimals

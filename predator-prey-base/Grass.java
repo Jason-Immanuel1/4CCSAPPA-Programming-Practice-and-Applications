@@ -1,14 +1,18 @@
 import java.util.List;
 import javafx.scene.paint.Color;
 
+/**
+ * producer to be eaten by Rabbit/Grasshopper. fixed % chance of growing back where dead animals are
+ */
+
 public class Grass extends Animal {
 
     private static final int MAX_AGE = 100;
-    private static final double GROWTH_PROBABILITY = 0.07;
+    private static final double GROWTH_PROBABILITY = 0.2;
     private int age;
 
     public Grass(Field field, Location location) {
-        super(field, location, Color.LIME);
+        super(field, location, Color.LIME, false);
         age = 0;
     }
 

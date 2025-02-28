@@ -6,7 +6,7 @@ import java.util.Random;
  * (which helps with testing). Set 'useShared' to false to get different random
  * behaviour every time.
  *
- * @author David J. Barnes and Michael Kölling
+ * @author David J. Barnes and Michael Kölling, Jonny Guest, Jason Immanuel
  * @version 2016.02.29
  */
 
@@ -37,42 +37,42 @@ public class Randomizer {
     public static String generateGene() {
     StringBuilder geneBuilder = new StringBuilder();  
     
-    int breedingAge = Randomizer.getRandom().nextInt(79) + 12;
+    int breedingAge = Randomizer.getRandom().nextInt(39) + 12;
     if(breedingAge < 10) {
         geneBuilder.append("0").append(breedingAge);
     } else {
         geneBuilder.append(breedingAge);
     }
     
-    int lifeSpan = Randomizer.getRandom().nextInt(111) + 10;
-    if(lifeSpan < 100) {
-        geneBuilder.append("0").append(lifeSpan);
+    int maxAge = Randomizer.getRandom().nextInt(111) + 10;
+    if(maxAge < 100) {
+        geneBuilder.append("0").append(maxAge);
     } else {
-        geneBuilder.append(lifeSpan);
+        geneBuilder.append(maxAge);
     }
     
-    int breedingProbabillity = Randomizer.getRandom().nextInt(51);
-    if(breedingProbabillity < 10) {
-        geneBuilder.append("0").append(breedingProbabillity);
+    int breedingProbability = Randomizer.getRandom().nextInt(81);
+    if(breedingProbability < 10) {
+        geneBuilder.append("0").append(breedingProbability);
     } else {
-        geneBuilder.append(breedingProbabillity);
+        geneBuilder.append(breedingProbability);
     }
     
-    int litterSize = Randomizer.getRandom().nextInt(13);
+    int litterSize = Randomizer.getRandom().nextInt(13) + 1;
     if(litterSize < 10) {
         geneBuilder.append("0").append(litterSize);
     } else {
         geneBuilder.append(litterSize);
     }
     
-    int diseaseProbabillity = Randomizer.getRandom().nextInt(51);
-    if(diseaseProbabillity < 10) {
-        geneBuilder.append("0").append(diseaseProbabillity);
+    int diseaseProbability = Randomizer.getRandom().nextInt(51);
+    if(diseaseProbability < 10) {
+        geneBuilder.append("0").append(diseaseProbability);
     } else {
-        geneBuilder.append(diseaseProbabillity);
+        geneBuilder.append(diseaseProbability);
     }
     
-    int metabolism = Randomizer.getRandom().nextInt(76) + 25;
+    int metabolism = Randomizer.getRandom().nextInt(75) + 25;
     if(metabolism < 100) {
         geneBuilder.append("0").append(metabolism);
     } else {

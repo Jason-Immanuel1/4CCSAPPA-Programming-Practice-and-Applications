@@ -5,22 +5,23 @@ import java.util.LinkedList;
 import javafx.scene.paint.Color; 
 
 /**
- * Write a description of class Grasshopper here.
+ * A model of a grasshopper.
+ * grasshoppers age, move, breed, die (from hunger, age or getting eaten), hunt, get sick and pass on sickness
  *
  * @author Jonny Guest and Jason Immanuel
- * @version (a version number or a date)
+ * @version 2025.02.26
  */
-
 public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
+    private String genes;
     
+    private int breedingAge;  
+    private int maxAge;      
+    private double breedingProbability;  
+    private int maxLitterSize;  
+    private double getSickProbability;  
+    private double metabolism;
     
-    private static final int BREEDING_AGE = 4;
-    private static final int MAX_AGE = 20;
-    private static final double BREEDING_PROBABILITY = 0.20;
-    private static final int MAX_LITTER_SIZE = 4;
-    
-    private static final int GRASS_FOOD_VALUE = 9;
-    private static final double GET_SICK_PROBABILITY = 0.01;
+    private static final int GRASS_FOOD_VALUE = 20;
     private static final double PASS_ON_SICKNESS_PROBABILLITY = 0.05;
     
     private static final Random rand = Randomizer.getRandom();
@@ -29,16 +30,34 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
     private int foodLevel;
     private int sicknessStepsRemaining = 0;
     private boolean isSick = false;
+    private boolean randomAge = false;
+    private int birthCount;
     
-    public Grasshopper(boolean randomAge, Field field, Location location, Color col){
-         super(field, location, col);
+    public Grasshopper(boolean randomAge, Field field, Location location, Color col, boolean isMale, String inheritedGene){
+        super(field, location, col, isMale);
+        this.birthCount = 0;
+        
+         if (randomAge) {
+            genes = Randomizer.generateGene();
+        } else {
+            genes = inheritedGene;
+        }
+        
+        breedingAge = Integer.parseInt(genes.substring(0, 2));
+        maxAge = Integer.parseInt(genes.substring(2, 5));
+        breedingProbability = Integer.parseInt(genes.substring(5, 7)) / 100.0;
+        maxLitterSize = Integer.parseInt(genes.substring(7, 9));
+        getSickProbability = Integer.parseInt(genes.substring(9, 11)) / 100.0;
+        metabolism = Integer.parseInt(genes.substring(11, 14)) / 100.0;
          
         if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
+            genes = Randomizer.generateGene();
+            age = rand.nextInt(maxAge);
             foodLevel = rand.nextInt(GRASS_FOOD_VALUE);
         }
         else {
             age = 0;
+            genes = inheritedGene;
             foodLevel = GRASS_FOOD_VALUE;
         }
     }
@@ -84,7 +103,7 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      */
     private void incrementAge() {
         age++;
-        if(age > MAX_AGE) {
+        if(age > maxAge) {
             setDead();
         }
     }
@@ -93,7 +112,7 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      * Make this grasshopper more hungry. This could result in the grasshopper's death.
      */
     private void incrementHunger() {
-        foodLevel--;
+        foodLevel -= metabolism;
         if(foodLevel <= 0) {
             setDead();
         }
@@ -125,16 +144,45 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      * @param newGrasshoppers A list to return newly born grasshopper's.
      */
     private void giveBirth(List<Animal> newGrasshoppers) {
-        // New hawks are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Grasshopper young = new Grasshopper(false, field, loc, getColor());
-            newGrasshoppers.add(young);
+        randomAge = false;
+    if (isMale()) {
+        return;
+    }
+    
+    if (!canBreed()) {
+        return;
+    }
+    
+    if (rand.nextDouble() > breedingProbability) {
+        return; 
+    }
+                                
+    Grasshopper breedingMate = findMate();
+    if (breedingMate == null) {
+        return; 
+    }
+    
+    List<Location> free = getField().getFreeAdjacentLocations(getLocation());
+    int births = rand.nextInt(maxLitterSize) + 1;
+    
+    for (int b = 0; b < births && free.size() > 0; b++) {
+        Location loc = free.remove(0);
+        boolean newbornIsMale = rand.nextDouble() < 0.5;
+
+        String parentGene1 = this.getGene();
+        String parentGene2 = breedingMate.getGene();
+        String offspringGene = parentGene1.substring(0, 7) + parentGene2.substring(7, 14);
+
+        if (birthCount > 1) {
+            offspringGene = randomlyMutateGene(offspringGene);
         }
+
+        
+
+        Grasshopper young = new Grasshopper(false, getField(), loc, getColor(), newbornIsMale, offspringGene);
+        newGrasshoppers.add(young);
+    }
+    birthCount += births;
     }
     
     /**
@@ -143,25 +191,32 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      * @return The number of births (may be zero).
      */
     private int breed() {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+    return rand.nextInt(maxLitterSize) + 1;
     }
     
     /**
      * A grasshopper can breed if it has reached the breeding age.
      */
-    private boolean canBreed() {
-        return age >= BREEDING_AGE;
+     private boolean canBreed() {
+    if(age >= breedingAge) {
+        List<Animal> neighbors = getField().getLivingNeighbours(getLocation());
+        for(Animal neighbor : neighbors) {
+            if(neighbor instanceof Grasshopper) {
+                Grasshopper grasshopperNeighbor = (Grasshopper) neighbor;
+                if(grasshopperNeighbor.isMale() != this.isMale()) {
+                    return true; 
+                }
+            }
+        }
+    }
+    return false;
     }
     
     /**
      * Any animal that is not already sick has a 1% chance of becoming sick.
      */
        public void getSick() {
-    if (rand.nextDouble() <= GET_SICK_PROBABILITY && sicknessStepsRemaining == 0) {
+    if (rand.nextDouble() <= getSickProbability && sicknessStepsRemaining == 0) {
         sicknessStepsRemaining = 5;
         isSick = true;
     }
@@ -172,7 +227,7 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
      */
     public void applySickness() {
     if (sicknessStepsRemaining > 0) {
-        foodLevel -= 2; 
+        foodLevel -= 2 * metabolism;
         sicknessStepsRemaining--; 
         
     }
@@ -199,6 +254,67 @@ public class Grasshopper extends Animal{         //DARKBLUE SQUARE IN FIELD
                 }
             }
         }
+    }
+    
+     /**
+     * grasshopper scane the adjacent rooms for a mate, must be a grasshopper.
+     */
+    private Grasshopper findMate() {
+    List<Animal> neighbors = getField().getLivingNeighbours(getLocation());
+    for (Animal neighbor : neighbors) {
+        if (neighbor instanceof Grasshopper) {
+            Grasshopper grasshopperNeighbor = (Grasshopper) neighbor;
+            if (grasshopperNeighbor.isMale()) { 
+                return grasshopperNeighbor; 
+            }
+        }
+    }
+    return null; 
+    }
+    
+    /**
+     * returns genetic code of current snake.
+     */
+    public String getGene(){
+        return genes;
+    }
+    
+    /**
+     * return age of each individual snake.
+     */
+    public int getAge() {
+    return this.age;
+    }
+    
+    /**
+     * return the number of births per grasshopper
+     */
+     public int getBirthCount() {
+        return birthCount;
+    }
+    
+    /**
+     * has a 20% chance of mutating any of the digits in the offspring gene string. 
+     */
+    private String randomlyMutateGene(String gene) {
+    StringBuilder mutatedGene = new StringBuilder(gene);
+    
+    for(int i = 0; i < gene.length(); i++) {
+        if(rand.nextDouble() <= 0.20) {
+            char geneDigit = gene.charAt(i);
+            
+            int digit = Character.getNumericValue(geneDigit); 
+            if(rand.nextDouble() <= 0.5) {
+                digit = (digit + 1) % 10; 
+            } else {
+                digit = (digit - 1 + 10) % 10; 
+            }
+            
+            mutatedGene.setCharAt(i, Character.forDigit(digit, 10));
+        }
+    }
+    
+    return mutatedGene.toString();
     }
 }
 

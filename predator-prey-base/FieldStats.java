@@ -113,5 +113,6 @@ public class FieldStats {
             }
         }
         countsValid = true;
+        
     }
 }

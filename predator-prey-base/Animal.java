@@ -23,6 +23,9 @@ public abstract class Animal {
     private boolean isSick;
     private static final double GET_SICK_PROBABILITY = 1;
     private int foodLevel;
+    private boolean isMale;
+    private boolean isAlive = true;
+    
     
     /**
      * Create a new animal at location in field.
@@ -31,7 +34,7 @@ public abstract class Animal {
      * @param location The location within the field.
      */
     
-    public Animal(Field field, Location location, Color col) {
+    public Animal(Field field, Location location, Color col, boolean isMale) {
         alive = true;
         this.field = field;
         setLocation(location);
@@ -40,6 +43,7 @@ public abstract class Animal {
         this.counter = new Counter(name); 
         this.isSick = false;
         this.sicknessStepsRemaining = 0;
+        this.isMale = isMale;
     }
     
     /**
@@ -127,4 +131,9 @@ public abstract class Animal {
     protected void setSicknessSteps(int steps) {
     this.sicknessStepsRemaining = steps;
     }
+    
+    public boolean isMale() {
+        return isMale;
+    }
+
 }
