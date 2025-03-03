@@ -1,0 +1,25 @@
+#BlueJ class context
+comment0.target=SimulatorView
+comment0.text=\n\ A\ graphical\ view\ of\ the\ simulation\ grid.\ The\ view\ displays\ a\ rectangle\ for\n\ each\ location.\n\n\ @author\ David\ J.\ Barnes,\ Michael\ K\u00F6lling\ &\ Jeffery\ Raphael\n\ @version\ 2024.02.03\n
+comment1.params=stage
+comment1.target=void\ start(javafx.stage.Stage)
+comment1.text=\n\ Create\ a\ view\ of\ the\ given\ width\ and\ height.\n\ @param\ height\ The\ simulation's\ height.\n\ @param\ width\ \ The\ simulation's\ width.\n
+comment2.params=text
+comment2.target=void\ setInfoText(java.lang.String)
+comment2.text=\n\ Display\ a\ short\ information\ label\ at\ the\ top\ of\ the\ window.\n
+comment3.params=generation\ field
+comment3.target=void\ updateCanvas(int,\ Field)
+comment3.text=\n\ Show\ the\ current\ status\ of\ the\ field.\n\ @param\ generation\ The\ current\ generation.\n\ @param\ field\ The\ field\ whose\ status\ is\ to\ be\ displayed.\n
+comment4.params=field
+comment4.target=boolean\ isViable(Field)
+comment4.text=\n\ Determine\ whether\ the\ simulation\ should\ continue\ to\ run.\n\ @return\ true\ If\ there\ is\ more\ than\ one\ species\ alive.\n
+comment5.params=numStep
+comment5.target=void\ simulate(int)
+comment5.text=\n\ Run\ the\ simulation\ from\ its\ current\ state\ for\ the\ given\ number\ of\n\ generations.\ \ Stop\ before\ the\ given\ number\ of\ generations\ if\ the\n\ simulation\ ceases\ to\ be\ viable.\n\ @param\ numGenerations\ The\ number\ of\ generations\ to\ run\ for.\n
+comment6.params=
+comment6.target=void\ reset()
+comment6.text=\n\ Reset\ the\ simulation\ to\ a\ starting\ position.\n
+comment7.params=args
+comment7.target=void\ main(java.lang.String[])
+comment7.text=\n\ Application\ main\ that\ loads\ and\ initializes\ the\ specified\ Application\ class\ \n\ on\ the\ JavaFX\ Application\ Thread.\n
+numComments=8
